@@ -15,7 +15,7 @@ relay_pulse_t pulse_pool[MAX_RELAY_PULSES];
 u8 pulse_pool_in_use[MAX_RELAY_PULSES];
 u8 pulse_active;
 s32 try_pulse_on(void *arg);
-void relay_pulse(u32 pin, u8 value);
+u8 relay_pulse(u32 pin, u8 value);
 relay_pulse_t* pulse_alloc(void);
 void pulse_free(relay_pulse_t* p);
 void deactivate_pin(u32 pin, u8 turn_off);
@@ -98,9 +98,9 @@ s32 try_pulse_on(void *arg) {
   return -1;
 }
 
-void relay_pulse(u32 pin, u8 value) {
+u8 relay_pulse(u32 pin, u8 value) {
   relay_pulse_t *pulse = pulse_alloc();
-  if (!pulse) return false;
+  if (!pulse) return 0;
 
   pulse->pin = pin;
   pulse->value = value;
@@ -112,7 +112,7 @@ void relay_pulse(u32 pin, u8 value) {
     TL_ZB_TIMER_SCHEDULE(try_pulse_on, pulse, RELAY_PULSE_RETRY);
   }
 
-  return true;
+  return 1;
 }
 
 s32 schedule_pin_clear(void *arg)
